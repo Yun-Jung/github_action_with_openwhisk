@@ -1,0 +1,60 @@
+name: generate-json
+
+# Controls when the action will run.
+on: [push]
+
+jobs: 
+  generate-json:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Install ibmcloud cli and set ibmcloud api (target can be set with 'ibmcloud target -o <value> -s <value>' as well)
+      - name: ibmcloud installation
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl
+          sudo curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+          ibmcloud login -u ${{ secrets.IBMCLOUD_USERNAME }} -p ${{ secrets.IBMCLOUD_PASSWORD }} -r ${{ secrets.IBMCLOUD_REGION }}
+          ibmcloud target --cf
+      
+      # Install openwhisk
+      - name: openwhisk installation
+        run: |
+          ibmcloud plugin install Cloud-Functions
+      
+      # Read the payload.json file (Change the path if you need to apply your own payload.json)
+      - name: Read package.json
+        - uses: actions/checkout@v2
+        - uses: microsoft/variable-substitution@v1 
+        with:
+          files: 'payload.json'
+        env:
+          aws_access_key_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      
+      # Create the alarm trigger with openwhisk #
+      
+      
+      
+      # Check action status. If failure, send email to notify administrators
+      - name: Send mail
+        if: ${{ failure() }}
+        uses: dawidd6/action-send-mail@v2
+        with:
+          # mail server settings
+          server_address: smtp.gmail.com
+          server_port: 465
+          # user credentials
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          # email subject
+          subject: ${{ github.job }} job of ${{ github.repository }} has ${{ job.status }}
+          # email body as text
+          body: |
+            ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
+            The workflow link is https://github.com/FLARE-forecast/github_action_with_openwhisk/actions/runs/${{ github.run_id }}
+          # comma-separated string, send email to
+          to: y.ku@ufl.edu
+          # from email name
+          from: FLARE
