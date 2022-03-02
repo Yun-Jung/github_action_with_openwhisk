@@ -9,6 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Checkout with branch
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
       # Install ibmcloud cli and set ibmcloud api (target can be set with 'ibmcloud target -o <value> -s <value>' as well)
       - name: ibmcloud installation
         run: |
@@ -25,8 +29,7 @@ jobs:
       
       # Read the payload.json file (Change the path if you need to apply your own payload.json)
       - name: Read package.json
-        - uses: actions/checkout@v2
-        - uses: microsoft/variable-substitution@v1 
+        uses: microsoft/variable-substitution@v1
         with:
           files: 'payload.json'
         env:
@@ -34,27 +37,3 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       
       # Create the alarm trigger with openwhisk #
-      
-      
-      
-      # Check action status. If failure, send email to notify administrators
-      - name: Send mail
-        if: ${{ failure() }}
-        uses: dawidd6/action-send-mail@v2
-        with:
-          # mail server settings
-          server_address: smtp.gmail.com
-          server_port: 465
-          # user credentials
-          username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}
-          # email subject
-          subject: ${{ github.job }} job of ${{ github.repository }} has ${{ job.status }}
-          # email body as text
-          body: |
-            ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
-            The workflow link is https://github.com/FLARE-forecast/github_action_with_openwhisk/actions/runs/${{ github.run_id }}
-          # comma-separated string, send email to
-          to: y.ku@ufl.edu
-          # from email name
-          from: FLARE
