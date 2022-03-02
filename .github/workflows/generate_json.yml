@@ -43,5 +43,5 @@ jobs:
         with:
           filename: 'test.json'
       - name: Show output
-        run: echo "{\"forecast_code\": \"${{ env.json_forecast_code}}\",\"config_set\": \"${{ env.json_config_set}}\",\"function\": \"${{ env.json_function}}\",\"use_https\": \"${{ env.json_use_https}}\",\"aws_default_region\": \"${{ env.json_aws_default_region}}\",\"aws_s3_endpoint\": \"${{ env.json_aws_s3_endpoint}}\",\"aws_access_key_ID\": \"${{ env.json_aws_access_key_ID}}\",\"aws_secret_access_key\": \"${{ env.json_aws_secret_access_key}}\"}"
-      
+        run: echo "{\"forecast_code\" "
+    
