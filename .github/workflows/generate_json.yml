@@ -37,3 +37,6 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       
       # Create the alarm trigger with openwhisk #
+      - name: print config after replacement
+        run: |
+          cat payload.yml
