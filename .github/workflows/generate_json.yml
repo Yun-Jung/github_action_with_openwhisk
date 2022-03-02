@@ -28,7 +28,7 @@ jobs:
           ibmcloud plugin install Cloud-Functions
       
       # Read the payload.json file (Change the path if you need to apply your own payload.json)
-      - name: Read package.json
+      - name: Read payload.json
         uses: microsoft/variable-substitution@v1
         with:
           files: 'payload.json'
@@ -37,6 +37,11 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       
       # Create the alarm trigger with openwhisk #
-      - name: print config after replacement
-        run: |
-          cat payload.json
+      - name: Read package.json
+        id: package
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./payload.json
+          
+      - name: Echo payload.json
+        run: echo "${{ steps.package.outputs.content }}"
