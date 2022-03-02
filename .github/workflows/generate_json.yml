@@ -45,8 +45,6 @@ jobs:
         with:
           path: ./payload.json
       
-      - name: Echo payload.json
-        run: echo "${{ steps.payload.outputs.content }}"
       
       - name: Run find-and-replace to remove slashes
         uses: mad9000/actions-find-and-replace-string@1
