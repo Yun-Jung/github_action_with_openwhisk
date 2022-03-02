@@ -39,4 +39,4 @@ jobs:
       # Create the alarm trigger with openwhisk #
       - name: print config after replacement
         run: |
-          cat payload.yml
+          cat payload.json
