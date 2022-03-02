@@ -22,26 +22,40 @@ jobs:
           ibmcloud login -u ${{ secrets.IBMCLOUD_USERNAME }} -p ${{ secrets.IBMCLOUD_PASSWORD }} -r ${{ secrets.IBMCLOUD_REGION }}
           ibmcloud target --cf
       
-      # Install openwhisk
+      # Install openwhisk and openwhisk-package-alarms library
       - name: openwhisk installation
         run: |
           ibmcloud plugin install Cloud-Functions
+          ibmcloud wsk package get /whisk.system/alarms --summary
       
-      # Read the payload.json file (Change the path if you need to apply your own payload.json)
-      - name: Read payload.json
+      # Modify payload.json (Change the path if you need to apply your own payload.json)
+      - name: Add the secret variables into payload.json
         uses: microsoft/variable-substitution@v1
         with:
           files: 'payload.json'
         env:
           aws_access_key_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          
       
-      # Create the alarm trigger with openwhisk #
-      - name: Read package.json
-        id: package
+      # Read the latest payload.json
+      - name: Read payload.json
+        id: payload
         uses: juliangruber/read-file-action@v1
         with:
           path: ./payload.json
-          
+      
       - name: Echo payload.json
-        run: echo "${{ steps.package.outputs.content }}"
+        run: echo "${{ steps.payload.outputs.content }}"
+      
+      - name: Run find-and-replace to remove slashes
+        uses: mad9000/actions-find-and-replace-string@1
+        id: findandreplace
+        with:
+          source: ${{ steps.payload.outputs.content }}
+          find: '"'
+          replace: '\"'
+      - name: Get the final output
+        run: echo "The replaced value is ${{ steps.findandreplace.outputs.value }}"
+      
+      
