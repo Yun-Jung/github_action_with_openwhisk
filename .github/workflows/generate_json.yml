@@ -39,20 +39,20 @@ jobs:
           
       
       # Read the latest payload.json
-      - name: Read payload.json
-        id: package
-        uses: juliangruber/read-file-action@v1
+      - name: Read file contents
+        id: read_file
+        uses: andstor/file-reader-action@v1
         with:
-          path: ./payload.json
-      
-      - name: Echo package.json
-        run: echo "${{ steps.package.outputs.content }}"
+          path: "payload.json"
+
+      - name: File contents
+        run: echo "${{ steps.read_file.outputs.contents }}"
         
       - name: Run find-and-replace to remove slashes
         uses: mad9000/actions-find-and-replace-string@1
         id: findandreplace
         with:
-          source: ${{ steps.package.outputs.content }}
+          source: ${{ steps.read_file.outputs.contents }}
           find: '"'
           replace: '\"'
       - name: Get the final output
