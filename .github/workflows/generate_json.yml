@@ -55,6 +55,12 @@ jobs:
             filename=${file//$filetype/}
             echo "alarm_name=$filename" >> $GITHUB_ENV
             echo "FORECAST_CODE=$(jq -r '."forecast_code"' ./$filename.json)" >> $GITHUB_ENV
+            echo "CONFIG_SET=$(jq -r '."config_set"' ./$filename.json)" >> $GITHUB_ENV
+            echo "FUNCTION=$(jq -r '."function"' ./$filename.json)" >> $GITHUB_ENV
+            echo "USE_HTTPS=$(jq -r '."use_https"' ./$filename.json)" >> $GITHUB_ENV
+            echo "AWS_DEFAULT_REGION=$(jq -r '."aws_default_region"' ./$filename.json)" >> $GITHUB_ENV
+            echo "AWS_S3_ENDPOINT=$(jq -r '."aws_s3_endpoint"' ./$filename.json)" >> $GITHUB_ENV
+            echo "SIM_NAME=$(jq -r '."sim_name"' ./$filename.json)" >> $GITHUB_ENV
           done
       
       # Set variables from json file
@@ -68,7 +74,7 @@ jobs:
       - name: Create openwhisk alarm
         if: ${{ env.DEL_STATUS != 'true' }}
         run: |
-           echo " ${{ env.FORECAST_CODE }} "
+           echo "${{ env.FORECAST_CODE }}"
       #    ibmcloud wsk trigger create ${{ env.alarm_name }} --feed /whisk.system/alarms/alarm --param cron "0 */1 * * *"  --param trigger_payload "{\"forecast_code\":\"${{ env.json_forecast_code}}\",\"config_set\":\"${{ env.json_config_set}}\",\"function\":\"${{ env.json_function}}\",\"use_https\":\"${{ env.json_use_https}}\",\"aws_default_region\":\"${{ env.json_aws_default_region}}\",\"aws_s3_endpoint\":\"${{ env.json_aws_s3_endpoint}}\",\"aws_access_key_ID\":\"${{ secrets.AWS_ACCESS_KEY_ID}}\",\"aws_secret_access_key\":\"${{ secrets.AWS_SECRET_ACCESS_KEY}}\"}"
       #    ibmcloud wsk rule create ${{ env.alarm_name }}_rule ${{ env.alarm_name }} temp_seq
     
