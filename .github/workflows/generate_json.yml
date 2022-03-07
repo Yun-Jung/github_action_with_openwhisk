@@ -60,8 +60,6 @@ jobs:
             echo "USE_HTTPS=$(jq -r '."use_https"' ./$filename.json) >> $GITHUB_ENV
             echo "AWS_DEFAULT_REGION=$(jq -r '."aws_default_region"' ./$filename.json) >> $GITHUB_ENV
             echo "AWS_S3_ENDPOINT=$(jq -r '."aws_s3_endpoint"' ./$filename.json) >> $GITHUB_ENV
-            echo "AWS_ACCESS_KEY_ID=$(jq -r '."aws_access_key_ID"' ./$filename.json) >> $GITHUB_ENV
-            echo "AWS_SECRET_ACCESS_KEY=$(jq -r '."aws_secret_access_key"' ./$filename.json) >> $GITHUB_ENV
             echo "SIM_NAME=$(jq -r '."sim_name"' ./$filename.json) >> $GITHUB_ENV
           done
       
