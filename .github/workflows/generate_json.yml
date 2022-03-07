@@ -63,13 +63,6 @@ jobs:
             echo "SIM_NAME=$(jq -r '."sim_name"' ./$filename.json)" >> $GITHUB_ENV
           done
       
-      # Set variables from json file
-      #- name: JSON to variables
-      #  if: ${{ env.DEL_STATUS != 'true' }}
-      #  uses: antifree/json-to-variables@v1.0.1
-      #  with:
-      #    filename: '${{ env.alarm_name }}.json'
-      
       # Set openwhisk alarm and rule
       - name: Create openwhisk alarm
         if: ${{ env.DEL_STATUS != 'true' }}
