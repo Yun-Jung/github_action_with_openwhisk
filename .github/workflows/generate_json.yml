@@ -12,7 +12,7 @@ jobs:
       - name: Checkout with branch
         uses: actions/checkout@v2
         with:
-          fetch-depth: 1
+          fetch-depth: 0
       # Install ibmcloud cli and set ibmcloud api (target can be set with 'ibmcloud target -o <value> -s <value>' as well)
       - name: ibmcloud installation
         run: |
@@ -27,16 +27,29 @@ jobs:
         run: |
           ibmcloud plugin install Cloud-Functions
           ibmcloud wsk package get /whisk.system/alarms --summary
-          
+      
+      # Find the new added json file
+      - name: find added json
+        id: added-files
+        uses: tj-actions/changed-files@v17.2
+      
+      - name: List all added files
+        run: |
+          for file in ${{ steps.changed-files.outputs.added_files }}; do
+            echo "payload=$file" >> $GITHUB_ENV
+            echo "$file was added"
+            echo ${{ env.payload }}
+          done
+      
       # Read payload.json
       - name: JSON to variables
         uses: antifree/json-to-variables@v1.0.1
         with:
-          filename: 'payload.json'
+          filename: '${{ env.payload }}.json'
       
       # Set openwhisk alarm and rule
-      - name: Create openwhisk alarm
-        run: |
-          ibmcloud wsk trigger create ga_test --feed /whisk.system/alarms/alarm --param cron "*/20 * * * *"  --param trigger_payload "{\"forecast_code\":\"${{ env.json_forecast_code}}\",\"config_set\":\"${{ env.json_config_set}}\",\"function\":\"${{ env.json_function}}\",\"use_https\":\"${{ env.json_use_https}}\",\"aws_default_region\":\"${{ env.json_aws_default_region}}\",\"aws_s3_endpoint\":\"${{ env.json_aws_s3_endpoint}}\",\"aws_access_key_ID\":\"${{ secrets.AWS_ACCESS_KEY_ID}}\",\"aws_secret_access_key\":\"${{ secrets.AWS_SECRET_ACCESS_KEY}}\"}"
-          ibmcloud wsk rule create ga_rule ga_test temp_seq
+      #- name: Create openwhisk alarm
+      #  run: |
+      #    ibmcloud wsk trigger create ga_test --feed /whisk.system/alarms/alarm --param cron "*/20 * * * *"  --param trigger_payload "{\"forecast_code\":\"${{ env.json_forecast_code}}\",\"config_set\":\"${{ env.json_config_set}}\",\"function\":\"${{ env.json_function}}\",\"use_https\":\"${{ env.json_use_https}}\",\"aws_default_region\":\"${{ env.json_aws_default_region}}\",\"aws_s3_endpoint\":\"${{ env.json_aws_s3_endpoint}}\",\"aws_access_key_ID\":\"${{ secrets.AWS_ACCESS_KEY_ID}}\",\"aws_secret_access_key\":\"${{ secrets.AWS_SECRET_ACCESS_KEY}}\"}"
+      #    ibmcloud wsk rule create ga_rule ga_test temp_seq
     
