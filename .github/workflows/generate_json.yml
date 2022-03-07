@@ -39,7 +39,8 @@ jobs:
       - name: List all added files
         run: |
           for file in ${{ steps.added-files.outputs.added_files }}; do
-            filename="$(echo "$file" |tr -d ".json")"
+            filetype=".json"
+            filename=${file//$filetype/}
             echo "payload=$filename" >> $GITHUB_ENV
             echo '${{ env.payload }}'
           done
