@@ -35,7 +35,7 @@ jobs:
         if: ${{ env.DEL_STATUS != 'true' }}
         run: |
           sudo apt-get update
-          sudo apt-get install -y curl
+          sudo apt-get install -y curl jq
           sudo curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
           ibmcloud login -u ${{ secrets.IBMCLOUD_USERNAME }} -p ${{ secrets.IBMCLOUD_PASSWORD }} -r ${{ secrets.IBMCLOUD_REGION }}
           ibmcloud target --cf
@@ -54,20 +54,20 @@ jobs:
             filetype=".json"
             filename=${file//$filetype/}
             echo "alarm_name=$filename" >> $GITHUB_ENV
+            cat ./$filename.json | jq '.forecast_code'
           done
       
       # Set variables from json file
-      - name: JSON to variables
-        if: ${{ env.DEL_STATUS != 'true' }}
-        uses: antifree/json-to-variables@v1.0.1
-        with:
-          filename: '${{ env.alarm_name }}.json'
+      #- name: JSON to variables
+      #  if: ${{ env.DEL_STATUS != 'true' }}
+      #  uses: antifree/json-to-variables@v1.0.1
+      #  with:
+      #    filename: '${{ env.alarm_name }}.json'
       
       # Set openwhisk alarm and rule
-      - name: Create openwhisk alarm
-        if: ${{ env.DEL_STATUS != 'true' }}
-        run: |
-          ibmcloud wsk rule delete ${{ env.alarm_name }}_rule
+      #- name: Create openwhisk alarm
+      #  if: ${{ env.DEL_STATUS != 'true' }}
+      #  run: |
       #    ibmcloud wsk trigger create ${{ env.alarm_name }} --feed /whisk.system/alarms/alarm --param cron "0 */1 * * *"  --param trigger_payload "{\"forecast_code\":\"${{ env.json_forecast_code}}\",\"config_set\":\"${{ env.json_config_set}}\",\"function\":\"${{ env.json_function}}\",\"use_https\":\"${{ env.json_use_https}}\",\"aws_default_region\":\"${{ env.json_aws_default_region}}\",\"aws_s3_endpoint\":\"${{ env.json_aws_s3_endpoint}}\",\"aws_access_key_ID\":\"${{ secrets.AWS_ACCESS_KEY_ID}}\",\"aws_secret_access_key\":\"${{ secrets.AWS_SECRET_ACCESS_KEY}}\"}"
       #    ibmcloud wsk rule create ${{ env.alarm_name }}_rule ${{ env.alarm_name }} temp_seq
     
