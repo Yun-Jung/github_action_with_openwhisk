@@ -54,7 +54,7 @@ jobs:
             filetype=".json"
             filename=${file//$filetype/}
             echo "alarm_name=$filename" >> $GITHUB_ENV
-            echo "FORECAST_CODE=$(jq -r '."forecast_code"' ./$filename.json) >> $GITHUB_ENV
+            echo "FORECAST_CODE=$(jq -r '."forecast_code"' ./$filename.json)" >> $GITHUB_ENV
           done
       
       # Set variables from json file
