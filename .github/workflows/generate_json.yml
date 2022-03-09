@@ -47,6 +47,17 @@ jobs:
           ibmcloud plugin install Cloud-Functions
           ibmcloud wsk package get /whisk.system/alarms --summary
       
+      - name: Delete the alarm and the rule if they are existed
+        continue-on-error: true
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_modified_files }}; do
+            filetype=".json"
+            filename=${file//$filetype/}
+            alarm_name=$filename
+            ibmcloud wsk trigger delete ${alarm_name}
+            ibmcloud wsk rule delete ${alarm_name}_rule
+          done
+      
       - name: Set variables from all pushed files and Set Openwhisk alarm
         if: ${{ env.DEL_STATUS != 'true' }}
         run: |
