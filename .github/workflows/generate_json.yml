@@ -32,7 +32,6 @@ jobs:
       
       # Install ibmcloud cli and set ibmcloud api (target can be set with 'ibmcloud target -o <value> -s <value>' as well)
       - name: ibmcloud installation
-        if: ${{ env.DEL_STATUS != 'true' }}
         run: |
           sudo apt-get update
           sudo apt-get install -y curl jq
