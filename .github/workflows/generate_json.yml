@@ -45,7 +45,7 @@ jobs:
           ibmcloud plugin install Cloud-Functions
           ibmcloud wsk package get /whisk.system/alarms --summary
       
-      - name: Delete the alarm and the rule if they are existed
+      - name: Delete the alarm if it existed
         continue-on-error: true
         run: |
           for file in ${{ steps.changed-files.outputs.all_modified_files }}; do
@@ -53,6 +53,15 @@ jobs:
             filename=${file//$filetype/}
             alarm_name=$filename
             ibmcloud wsk trigger delete ${alarm_name}
+          done
+      
+      - name: Delete the rule if it existed
+        continue-on-error: true
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_modified_files }}; do
+            filetype=".json"
+            filename=${file//$filetype/}
+            alarm_name=$filename
             ibmcloud wsk rule delete ${alarm_name}_rule
           done
       
@@ -74,5 +83,3 @@ jobs:
             ibmcloud wsk trigger create $alarm_name --feed /whisk.system/alarms/alarm --param cron "0 */6 * * *"  --param trigger_payload ${payload}
             ibmcloud wsk rule create ${alarm_name}_rule $alarm_name flare
           done
-          
-    
