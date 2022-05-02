@@ -6,6 +6,22 @@ on:
     paths:
       - '**.json'
 
+jobs:
+  generate-json:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout with branch
+
+name: set-openwhisk-alarm
+
+# Controls when the action will run.
+on:
+  push:
+    paths:
+      - '**.json'
+
 jobs: 
   generate-json:
     # The type of runner that the job will run on
